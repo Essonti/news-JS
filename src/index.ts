@@ -1,7 +1,5 @@
-//import * as _ from 'lodash';
+import App from './components/app/app';
+import './global.css';
 
-const smth: any = 'lol'; 
-const message = 'Hello World';
-console.log(message);
-console.log(smth);
-
+const app = new App();
+app.start();
