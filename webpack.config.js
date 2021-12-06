@@ -6,19 +6,25 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const baseConfig = {
     entry: path.resolve(__dirname, './src/index.js'),
     mode: 'development',
+    devtool: 'inline-source-map',
     module: {
         rules: [
             {
-                test: /\.css$/i,
+                test: [/\.css$/i],
                 use: ['style-loader', 'css-loader'],
             },
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            }
         ],
     },
     resolve: {
-        extensions: ['.js'],
+        extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-        filename: 'index.js',
+        filename: 'bundle.js', //index.js
         path: path.resolve(__dirname, '../dist'),
     },
     plugins: [
@@ -30,31 +36,17 @@ const baseConfig = {
     ],
 };
 
-module.exports = {
-    entry: './src/index.ts',
-    devtool: 'inline-source-map',
-    module: {
-      rules: [
-        {
-          test: /\.tsx?$/,
-          use: 'ts-loader',
-          exclude: /node_modules/,
-        },
-      ],
-    },
-    resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
-    },
-    output: {
-      filename: 'bundle.js',
-      path: path.resolve(__dirname, 'dist'),
-    },
-  };
+module.exports = ({ mode }) => {
+    const isProductionMode = mode === 'prod';
+    const envConfig = isProductionMode ? require('./webpack.prod.config') : require('./webpack.dev.config');
 
+    return merge(baseConfig, envConfig);
+};
 
-// module.exports = ({ mode }) => {
-//     const isProductionMode = mode === 'prod';
-//     const envConfig = isProductionMode ? require('./webpack.prod.config') : require('./webpack.dev.config');
+// >>>>>>>>>>>>>>>>>>NOT CHANGED
 
-//     return merge(baseConfig, envConfig);
-// };
+// output: {
+//   path: path.resolve(__dirname, './migration-to-TypeScript'),
+//   filename: '[name].[hash].js',
+//   assetModuleFilename: '[file]',
+// }
